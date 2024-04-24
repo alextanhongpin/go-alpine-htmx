@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My First Web Page</title>
+    <script
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+      defer
+    ></script>
+    <style>
+      [x-cloak] {
+        display: none !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Hello, world!</h1>
+    <div x-init="date = new Date()" x-text="date"></div>
+
+    <!-- Building a dropdown -->
+    <div x-data="{open: false}">
+      <button @click="open = !open">Toggle</button>
+      <div x-show="open" @click.outside="open = false" x-transition>
+        <p>item 1</p>
+        <p>item 2</p>
+        <p>item 3</p>
+        <p>item 4</p>
+      </div>
+    </div>
+
+    <hr />
+
+    <!-- Building a counter -->
+    <div x-data="{count: 0}">
+      <button @click="count--">Decrement</button>
+      <button x-on:click="count++">Increment</button>
+      <div
+        x-text="count"
+        :style="{color: count > 0 ? 'green' : count < 0 ? 'red' : 'black'}"
+      ></div>
+    </div>
+
+    <hr />
+
+    <!-- Building a search -->
+    <div
+      x-data="{ 
+      search: '', 
+      items: ['apple', 'banana', 'cherry'], 
+      get filteredItems() { 
+        return this.items.filter(i => i.startsWith(this.search)) 
+      } 
+    }"
+    >
+      <input type="search" x-model="search" />
+      Searching for: <span x-text="search"></span>
+
+      <ul>
+        <template x-for="item in filteredItems" :key="item">
+          <li x-text="item"></li>
+        </template>
+      </ul>
+    </div>
+
+    <hr />
+
+    <ul>
+      <template
+        x-for="name in names"
+        x-init="names = ['alpha', 'beta', 'charlie']"
+        :key="name"
+      >
+        <li x-text="name"></li>
+      </template>
+    </ul>
+
+    <hr />
+    <!-- Bind an empty data to allow alpine js to bind the click. -->
+    <button x-data @click="alert('I\'ve been clicked!')">Click Me</button>
+
+    <hr />
+
+    <!-- This example demonstrates using global data -->
+    <div x-data="dropdown">
+      <button @click="toggle">Expand</button>
+
+      <span x-show="open">Content...</span>
+    </div>
+
+    <hr />
+
+    <!-- This example demonstrates the usage of global data -->
+    <div x-data>
+      <template x-for="item in $store.tabs.items" :key="item">
+        <button x-text="item" @click="$store.tabs.current = item"></button>
+      </template>
+      <template x-if='$store.tabs.current == "first"'>
+        <div>First content</div>
+      </template>
+
+      <template x-if='$store.tabs.current == "second"'>
+        <div>Second content</div>
+      </template>
+
+      <template x-if='$store.tabs.current == "third"'>
+        <div>Third content</div>
+      </template>
+    </div>
+
+    <hr />
+
+    <!-- This example demonstrates the usage of inner html. Note that x-data is required. -->
+    <div x-data x-html="'<h1>start here</h1>'"></div>
+
+    <hr />
+
+    <!-- Dispatching custom events -->
+    <div x-data @foo="console.log('foo was dispatched')">
+      <button @click="$dispatch('foo')">Yes</button>
+    </div>
+
+    <div x-data @foo.window="console.log('foo was dispatched on windows')">
+      ...
+    </div>
+
+    <script>
+      document.addEventListener("alpine:init", () => {
+        // Will be executed before initializing Alpine.
+
+        // Re-usable data.
+        Alpine.data("dropdown", () => ({
+          open: false,
+
+          toggle() {
+            this.open = !this.open;
+          },
+        }));
+
+        // Global store
+        Alpine.store("tabs", {
+          current: "first",
+          items: ["first", "second", "third"],
+        });
+      });
+
+      document.addEventListener("alpine:initialized", () => {
+        // Will be executed after initializing Alpine.
+      });
+    </script>
+  </body>
+</html>
