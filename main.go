@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -20,6 +21,23 @@ func main() {
 		template.Must(template.New("clicked").Parse(`<h1>{{.Msg}}</h1>`)).Execute(w, map[string]any{
 			"Msg": "clicked",
 		})
+	})
+
+	mux.HandleFunc("GET /trigger_delay", func(w http.ResponseWriter, r *http.Request) {
+		// The data is passed in as q.
+		q := r.URL.Query().Get("q")
+		fmt.Println(q)
+		fruits := []string{"apple", "banana", "cherry"}
+
+		var sb strings.Builder
+		for _, f := range fruits {
+			if strings.HasPrefix(f, q) {
+				sb.WriteString(fmt.Sprintf(`<li>%s</li>`, f))
+			}
+		}
+		logger.Info("trigger_delay")
+
+		fmt.Fprint(w, sb.String())
 	})
 
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("public"))))

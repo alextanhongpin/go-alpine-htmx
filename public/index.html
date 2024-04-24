@@ -16,6 +16,14 @@
     <!-- have a button POST a click via AJAX -->
     <button hx-post="/clicked" hx-swap="outerHTML">Click Me</button>
 
-    <h1 x-data="{ message: 'I ❤️ Alpine' }" x-text="message"></h1>
+    <input
+      type="text"
+      name="q"
+      hx-get="/trigger_delay"
+      hx-trigger="keyup changed delay:500ms"
+      hx-target="#search-results"
+      placeholder="Search..."
+    />
+    <div id="search-results"></div>
   </body>
 </html>
