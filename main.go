@@ -1,11 +1,18 @@
 package main
 
 import (
+	"html/template"
 	"log/slog"
 	"net/http"
 	"os"
 
 	"github.com/alextanhongpin/go-alpine-htmx/root"
+)
+
+var (
+	// Apply the base template, then the content.
+	home    = template.Must(template.ParseFiles("public/base.html", "public/index.html"))
+	profile = template.Must(template.ParseFiles("public/base.html", "public/profile.html"))
 )
 
 func main() {
@@ -17,7 +24,19 @@ func main() {
 	mux.HandleFunc("POST /clicked", r.Clicked)
 	mux.HandleFunc("GET /trigger_delay", r.TriggerDelay)
 
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("public"))))
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		home.Execute(w, nil)
+	})
+
+	mux.HandleFunc("GET /profile", func(w http.ResponseWriter, r *http.Request) {
+		name := r.URL.Query().Get("name")
+		if name == "" {
+			name = "world"
+		}
+		profile.Execute(w, map[string]any{
+			"Name": name,
+		})
+	})
 
 	logger.Info("listening to port *:8080. press ctrl+c to cancel.")
 	http.ListenAndServe(":8080", mux)
