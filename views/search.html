@@ -1,0 +1,5 @@
+{{ if .Empty }}
+<div>No results found for <b>{{.Query}}</b></div>
+{{ end }} {{ range $f := .Fruits }}
+<div>{{$f}}</div>
+{{ end }}
