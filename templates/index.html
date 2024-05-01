@@ -1,0 +1,66 @@
+{{ define "content" }}
+<h1>Welcome to my first web page!</h1>
+<p>This is a paragraph of text.</p>
+
+<!-- have a button POST a click via AJAX -->
+<button hx-post="/clicked" hx-swap="outerHTML">Click Me</button>
+
+<input
+  type="text"
+  name="q"
+  hx-get="/trigger_delay"
+  hx-trigger="keyup changed delay:500ms"
+  hx-target="#search-results"
+  placeholder="Search..."
+/>
+<div id="search-results"></div>
+
+<!-- Use the response-targets extensions to capture different http status codes -->
+<div hx-ext="response-targets">
+  <div id="error"></div>
+  <div id="success"></div>
+  <div id="not-found"></div>
+
+  <button
+    hx-post="/response"
+    hx-target="#success"
+    hx-target-404="#not-found"
+    hx-target-error="#error"
+  >
+    Test!
+  </button>
+</div>
+
+<!-- Use client side templating. -->
+
+<div hx-ext="client-side-templates">
+  <button
+    hx-get="/users/me"
+    hx-swap="innerHTML"
+    hx-target="#content"
+    handlebars-array-template="foo"
+  >
+    Click Me
+  </button>
+  <div id="content"></div>
+
+  <template id="foo">
+    {{ `{{#with data}}` }}
+    <p>
+      {{ `Hi, {{ name }}, you are {{ age }} years old.` }} {{ `{{#lte age 13}}
+      You are minor {{else}} Wassup {{/lte}}` }}
+    </p>
+    {{ `{{/with}}` }}
+  </template>
+  <script>
+    Handlebars.registerHelper("lte", function (v1, v2, options) {
+      if (v1 < v2) {
+        return options.fn(this);
+      }
+
+      return options.inverse(this);
+    });
+  </script>
+</div>
+
+{{ end }}

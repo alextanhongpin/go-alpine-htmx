@@ -11,8 +11,8 @@ import (
 
 var (
 	// Apply the base template, then the content.
-	home    = template.Must(template.ParseFiles("public/base.html", "public/index.html"))
-	profile = template.Must(template.ParseFiles("public/base.html", "public/profile.html"))
+	home    = template.Must(template.ParseFiles("templates/base.html", "templates/index.html"))
+	profile = template.Must(template.ParseFiles("templates/base.html", "templates/profile.html"))
 )
 
 func main() {
@@ -23,6 +23,8 @@ func main() {
 	mux.HandleFunc("GET /healthz", r.Healthz)
 	mux.HandleFunc("POST /clicked", r.Clicked)
 	mux.HandleFunc("GET /trigger_delay", r.TriggerDelay)
+	mux.HandleFunc("POST /response", r.Response)
+	mux.HandleFunc("GET /users/me", r.Me)
 
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		home.Execute(w, nil)
